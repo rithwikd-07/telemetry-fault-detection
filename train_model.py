@@ -12,6 +12,15 @@ from sklearn.metrics import classification_report, confusion_matrix
 # 1. Load dataset
 df = pd.read_csv("data/predictive_maintenance.csv")
 
+print("=== DATASET INFORMATION ===")
+print("Dataset shape:", df.shape)
+
+print("\nMissing values:")
+print(df.isnull().sum())
+
+print("\nMachine failure distribution:")
+print(df["Machine failure"].value_counts())
+
 
 # 2. Select telemetry features
 features = [
@@ -24,13 +33,20 @@ features = [
 
 target = "Machine failure"
 
+print("\n=== DATA PREPARATION ===")
+print("Features used:")
+print(features)
+
+print("\nTarget:")
+print(target)
+
 
 # 3. Separate features and target
 X = df[features]
 y = df[target]
 
 
-# 4. Split data
+# 4. Split data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
@@ -38,6 +54,15 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42,
     stratify=y
 )
+
+print("\nTraining data:", X_train.shape)
+print("Testing data:", X_test.shape)
+
+print("\nTraining target distribution:")
+print(y_train.value_counts())
+
+print("\nTesting target distribution:")
+print(y_test.value_counts())
 
 
 # 5. Create Random Forest model
@@ -49,7 +74,9 @@ model = RandomForestClassifier(
 
 
 # 6. Train model
+print("\n=== MODEL TRAINING ===")
 print("Training Random Forest model...")
+
 model.fit(X_train, y_train)
 
 
@@ -57,13 +84,14 @@ model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 
 
-# 8. Model performance
+# 8. Evaluate model
 print("\n=== MODEL PERFORMANCE ===")
 
 print(classification_report(
     y_test,
     y_pred,
-    target_names=["Normal", "Failure"]
+    target_names=["Normal", "Failure"],
+    zero_division=0
 ))
 
 
@@ -72,7 +100,7 @@ os.makedirs("outputs", exist_ok=True)
 os.makedirs("models", exist_ok=True)
 
 
-# 10. Confusion Matrix
+# 10. Create confusion matrix
 cm = confusion_matrix(y_test, y_pred)
 
 plt.figure(figsize=(6, 4))
@@ -98,10 +126,10 @@ plt.savefig(
 
 plt.close()
 
-print("\nConfusion matrix saved.")
+print("Confusion matrix saved to: outputs/confusion_matrix.png")
 
 
-# 11. Feature Importance
+# 11. Create feature importance graph
 importance = pd.Series(
     model.feature_importances_,
     index=features
@@ -115,6 +143,7 @@ importance.plot(kind="barh")
 
 plt.title("Feature Importance - Machine Failure Prediction")
 plt.xlabel("Importance")
+
 plt.tight_layout()
 
 plt.savefig(
@@ -124,7 +153,7 @@ plt.savefig(
 
 plt.close()
 
-print("Feature importance saved.")
+print("Feature importance saved to: outputs/feature_importance.png")
 
 
 # 12. Save trained model
@@ -134,6 +163,5 @@ joblib.dump(
 )
 
 print("Model saved to: models/random_forest.pkl")
-
 
 print("\n=== PROJECT TRAINING COMPLETED ===")

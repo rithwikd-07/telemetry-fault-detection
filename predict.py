@@ -8,14 +8,14 @@ model = joblib.load("models/random_forest.pkl")
 print("=== MACHINE FAILURE PREDICTION ===")
 
 try:
-    # Get sensor values
+    # Get sensor values from the user
     air_temperature = float(input("Air temperature [K]: "))
     process_temperature = float(input("Process temperature [K]: "))
     rotational_speed = float(input("Rotational speed [rpm]: "))
     torque = float(input("Torque [Nm]: "))
     tool_wear = float(input("Tool wear [min]: "))
 
-    # Create input DataFrame
+    # Create a DataFrame with the same features used during training
     input_data = pd.DataFrame([{
         "Air temperature [K]": air_temperature,
         "Process temperature [K]": process_temperature,
@@ -24,12 +24,13 @@ try:
         "Tool wear [min]": tool_wear
     }])
 
-    # Make prediction
+    # Predict machine status
     prediction = model.predict(input_data)[0]
 
-    # Get estimated probability
+    # Get the model's estimated probability of failure
     failure_probability = model.predict_proba(input_data)[0][1]
 
+    # Display result
     print("\n=== PREDICTION RESULT ===")
     print(f"Failure probability estimate: {failure_probability * 100:.2f}%")
 
