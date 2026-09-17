@@ -1,0 +1,62 @@
+# Predictive Maintenance on Industrial Telemetry Data
+
+I built this project to explore how machine learning can be used with sensor data to identify whether a machine is operating normally or a failure is likely to occur.
+
+The main idea is to use machine telemetry such as temperature, rotational speed, torque, and tool wear and use these values to predict the machine status.
+
+## Dataset
+
+I used the **AI4I 2020 Predictive Maintenance Dataset**.
+
+The dataset contains 10,000 records and 14 columns. For this project, I selected 5 sensor features:
+
+- **Air Temperature [K]**
+- **Process Temperature [K]**
+- **Rotational Speed [rpm]**
+- **Torque [Nm]**
+- **Tool Wear [min]**
+
+The target variable is `Machine failure`:
+
+- `0` = Normal operation
+- `1` = Machine failure
+
+The dataset contains:
+
+- 9,661 normal records
+- 339 failure records
+
+Since the number of failure records is much smaller than the normal records, this is an imbalanced classification problem. Because of this, I looked at precision, recall, and F1-score instead of relying only on accuracy.
+
+## How I Built It
+
+### 1. Data Preparation
+
+I loaded the dataset using Pandas and checked its structure and missing values.
+
+There were no missing values in the dataset.
+
+I selected the 5 sensor features and the `Machine failure` column as the target.
+
+The data was divided into:
+
+- 70% training data
+- 30% testing data
+
+I used **stratified splitting** so that the proportion of normal and failure records was maintained in both the training and testing sets.
+
+This resulted in:
+
+- 7,000 training records
+- 3,000 testing records
+
+### 2. Model Training
+
+I used a **Random Forest Classifier** for the first version of the project.
+
+The model was configured with:
+
+```python
+n_estimators=100
+random_state=42
+class_weight="balanced"
